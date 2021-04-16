@@ -12,7 +12,7 @@ app.use(cors());
 app.use("/posts", postRoutes);
 
 const CONNECTION_URL =
-  "mongodb+srv://dilshodDCI:dilshodDCI123@cluster0.ldws3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+  "mongodb+srv://dilshodDCI:dilshodDCI123@cluster0.ldws3.mongodb.net/imageboard36?retryWrites=true&w=majority";
 
 const PORT = process.env.PORT || 5000;
 
