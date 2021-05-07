@@ -7,7 +7,7 @@ import { actionCreatePost, updatePost } from "../../actions/posts";
 
 //GET CURRENT ID
 
-const Form = ({currentId, setCurrentId}) => {
+const Form = ({ currentId, setCurrentId }) => {
   const [postData, setPostData] = useState({
     creator: "",
     title: "",
@@ -16,26 +16,28 @@ const Form = ({currentId, setCurrentId}) => {
     selectedFile: "",
   });
 
-  const post = useSelector((state)=> currentId ? state.posts.find((p)=>p._id === currentId): null)
+  const post = useSelector((state) =>
+    currentId ? state.posts.find((p) => p._id === currentId) : null
+  );
 
   const dispatch = useDispatch();
 
-  useEffect(()=>{
-    if(post) {
-      setPostData(post)
+  useEffect(() => {
+    if (post) {
+      setPostData(post);
     }
-  }, [post])
+  }, [post]);
 
   const classes = useStyles();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if(currentId) {
-      dispatch(updatePost(currentId, postData))
-    } else{
+    if (currentId) {
+      dispatch(updatePost(currentId, postData));
+    } else {
       dispatch(actionCreatePost(postData));
     }
-    clear()
+    clear();
   };
 
   const clear = () => {
@@ -46,7 +48,8 @@ const Form = ({currentId, setCurrentId}) => {
       message: "",
       tags: "",
       selectedFile: "",
-    })};
+    });
+  };
 
   return (
     <Paper className={classes.paper}>
@@ -56,7 +59,10 @@ const Form = ({currentId, setCurrentId}) => {
         className={`${classes.form} ${classes.root}`}
         onSubmit={handleSubmit}
       >
-        <Typography variant="h5"> {currentId ? `Editing`: `Creating`} Image Card</Typography>
+        <Typography variant="h5">
+          {" "}
+          {currentId ? `Editing` : `Creating`} Image Card
+        </Typography>
         <TextField
           name="creator"
           variant="outlined"
@@ -91,7 +97,9 @@ const Form = ({currentId, setCurrentId}) => {
           label="Tags"
           fullWidth
           value={postData.tags}
-          onChange={(e) => setPostData({ ...postData, tags: e.target.value })}
+          onChange={(e) =>
+            setPostData({ ...postData, tags: e.target.value.split(",") })
+          }
         />
         <div className={classes.fileInput}>
           <FileBase
