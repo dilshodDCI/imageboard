@@ -8,6 +8,7 @@ import useStyles from "./styles";
 
 const Navbar = () => {
   const classes = useStyles();
+  // const user == null
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")));
   const dispatch = useDispatch();
   const history = useHistory();

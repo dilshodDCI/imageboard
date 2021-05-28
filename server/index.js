@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import postRoutes from "./routes/posts.js";
+import userRoutes from "./routes/users.js";
 import dotenv from "dotenv";
 
 const app = express();
@@ -12,6 +13,7 @@ app.use(express.json({ limit: "30mb", extended: true }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
 app.use("/posts", postRoutes);
+app.use("/user", userRoutes);
 
 // const CONNECTION_URL =
 //   "mongodb+srv://dilshodDCI:dilshodDCI123@cluster0.ldws3.mongodb.net/imageboard36?retryWrites=true&w=majority";
