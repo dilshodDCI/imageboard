@@ -8,8 +8,9 @@ import { actionCreatePost, updatePost } from "../../actions/posts";
 //GET CURRENT ID
 
 const Form = ({ currentId, setCurrentId }) => {
+  const user = JSON.parse(localStorage.getItem("profile"));
+
   const [postData, setPostData] = useState({
-    creator: "",
     title: "",
     message: "",
     tags: "",
@@ -33,9 +34,11 @@ const Form = ({ currentId, setCurrentId }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (currentId) {
-      dispatch(updatePost(currentId, postData));
+      dispatch(
+        updatePost(currentId, { ...postData, name: user?.result?.name })
+      );
     } else {
-      dispatch(actionCreatePost(postData));
+      dispatch(actionCreatePost({ ...postData, name: user?.result?.name }));
     }
     clear();
   };
@@ -43,13 +46,23 @@ const Form = ({ currentId, setCurrentId }) => {
   const clear = () => {
     setCurrentId(null);
     setPostData({
-      creator: "",
       title: "",
       message: "",
       tags: "",
       selectedFile: "",
     });
   };
+
+  if (!user?.result?.name) {
+    //Please sign in
+    return (
+      <Paper className={classes.paper}>
+        <Typography variant="h6" align="center">
+          Please Sign In to create your own cards and like other's cards
+        </Typography>
+      </Paper>
+    );
+  }
 
   return (
     <Paper className={classes.paper}>
@@ -63,7 +76,7 @@ const Form = ({ currentId, setCurrentId }) => {
           {" "}
           {currentId ? `Editing` : `Creating`} Image Card
         </Typography>
-        <TextField
+        {/* <TextField
           name="creator"
           variant="outlined"
           label="Creator"
@@ -72,7 +85,7 @@ const Form = ({ currentId, setCurrentId }) => {
           onChange={(e) =>
             setPostData({ ...postData, creator: e.target.value })
           }
-        />
+        /> */}
         <TextField
           name="title"
           variant="outlined"
