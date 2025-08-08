@@ -1,3 +1,4 @@
+// Auth.js
 import React, { useState } from "react";
 import {
   Avatar,
@@ -10,8 +11,11 @@ import {
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import useStyles from "./styles";
 import Input from "./Input";
-import { GoogleLogin } from "react-google-login";
-import Icon from "./icon";
+// ⬇️ NEW: используем новую библиотеку GIS
+import { GoogleLogin } from "@react-oauth/google";
+import jwt_decode from "jwt-decode"; // уже есть в deps
+// ⬆️ УДАЛИ: import { GoogleLogin } from "react-google-login";
+// ⬆️ УДАЛИ: import Icon from "./icon";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 
@@ -38,10 +42,24 @@ const Auth = () => {
     setShowPassword(false);
   };
 
-  const googleSuccess = async (res) => {
-    const result = res?.profileObj;
-    const token = res?.tokenId;
+  // ⬇️ NEW: обработчики для новой кнопки Google
+  const googleSuccess = async (credentialResponse) => {
     try {
+      const token = credentialResponse?.credential; // это ID Token (JWT)
+      if (!token) throw new Error("No Google credential");
+
+      // Декодим, чтобы сохранить совместимость с прежним shape (profileObj)
+      const decoded = jwt_decode(token);
+      const result = {
+        email: decoded?.email,
+        name: decoded?.name,
+        givenName: decoded?.given_name,
+        familyName: decoded?.family_name,
+        imageUrl: decoded?.picture,
+        googleId: decoded?.sub,
+      };
+
+      // Сохраняем так же, как раньше: { result, token }
       dispatch({ type: "AUTH", data: { result, token } });
       history.push("/");
     } catch (err) {
@@ -55,7 +73,6 @@ const Auth = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    //console.log(formData);
 
     if (isSignup) {
       dispatch(signup(formData, history));
@@ -123,6 +140,7 @@ const Auth = () => {
               />
             )}
           </Grid>
+
           <Button
             type="submit"
             fullWidth
@@ -132,25 +150,14 @@ const Auth = () => {
           >
             {isSignup ? "Sign Up" : "Sign In"}
           </Button>
+
+          {/* ⬇️ NEW: заменили старый <GoogleLogin ...render> на GIS-кнопку */}
           <GoogleLogin
-            clientId="135873137906-mvdousn5i0onq1mndi4kgbrm155rst51.apps.googleusercontent.com"
-            render={(renderProps) => (
-              <Button
-                className={classes.googleButton}
-                color="primary"
-                fullWidth
-                onClick={renderProps.onClick}
-                disabled={renderProps.disabled}
-                startIcon={<Icon />}
-                variant="contained"
-              >
-                Google Sign In
-              </Button>
-            )}
             onSuccess={googleSuccess}
-            onFailure={googleFailure}
-            cookiePolicy="single_host_origin"
+            onError={googleFailure}
+            useOneTap
           />
+
           <Grid container justify="flex-end">
             <Grid item>
               <Button onClick={switchMode}>
